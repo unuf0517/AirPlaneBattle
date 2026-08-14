@@ -1,6 +1,7 @@
 package view.game;
 
 import controller.GameController;
+import controller.MusicPlayer;
 import controller.collision.CollisionDetector;
 import controller.gameEnum.GameState;
 import controller.gameEnum.Skin;
@@ -185,6 +186,7 @@ public class GameCenterPanel extends JPanel {
             explosionList.removeIf(Explosion::isFinished);//播放完爆炸图片就释放
             if (heroDeathExplosion != null && heroDeathExplosion.isFinished()) {
                 heroDeathExplosion = null;
+                MusicPlayer.play("/music/gameover.wav");
                 GameController.getInstance().endGame();
             }
             repaint();
@@ -316,6 +318,7 @@ public class GameCenterPanel extends JPanel {
         //英雄机子弹生成
         bulletTimer=new Timer(170,e->{
             if(heroPlane==null) return;
+            MusicPlayer.play("/music/fire.wav");
             int x=heroPlane.getX()+HeroPlane.WIDTH/2-HeroBullet.WIDTH/2;
             int y=heroPlane.getY();
             if(heroPlane.isDoubleFire()){
@@ -448,6 +451,8 @@ public class GameCenterPanel extends JPanel {
         }
     }
     private void startCountdown(int nextLevel) {
+        MusicPlayer.play("/music/countDown.wav");
+
         GameController.getInstance().setGameStatus(GameState.COUNTDOWN);
         GameUI.gameFrame.refreshMenuState();
         //暂停游戏

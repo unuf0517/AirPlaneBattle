@@ -1,6 +1,7 @@
 package model.plane;
 
 import controller.GameController;
+import controller.MusicPlayer;
 import controller.gameEnum.Skin;
 import controller.gameEnum.Type;
 import model.effect.Explosion;
@@ -118,6 +119,7 @@ public class HeroPlane extends Plane {
                 Type t = (skin == Skin.GRAY && isDoubleFire()) ? Type.H_HERO : Type.L_HERO;
                 GameUI.gameFrame.getGameCenterPanel().getExplosionList().add(new Explosion(getX(), getY(), HeroPlane.WIDTH, HeroPlane.HEIGHT, t));
                 //回到初始位置
+                MusicPlayer.play("/music/reborn.wav");
                 setX(GameUI.gameFrame.getGameCenterPanel().getWidth() / 2 - HeroPlane.WIDTH / 2);
                 setY(GameUI.gameFrame.getGameCenterPanel().getHeight() - HeroPlane.HEIGHT);
                 setInvincibleTime(14);

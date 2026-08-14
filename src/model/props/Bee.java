@@ -1,7 +1,7 @@
 package model.props;
 
+import controller.MusicPlayer;
 import model.plane.HeroPlane;
-import view.GameUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +19,7 @@ public class Bee extends Prop{
     @Override
     public void apply(HeroPlane hero) {
         if(hero.getMaxHp() == hero.getHp() || hero.getHp()==0) return;
+        MusicPlayer.play("/music/getHp.wav");
         hero.setHp(hero.getHp()+1);
 
     }

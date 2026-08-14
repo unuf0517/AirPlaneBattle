@@ -1,6 +1,7 @@
 package controller.key;
 
 import controller.GameController;
+import controller.MusicPlayer;
 import controller.gameEnum.GameState;
 import controller.gameEnum.Type;
 import model.bullet.EnemyBullet;
@@ -63,6 +64,8 @@ public class GameKeyLis extends KeyAdapter {
 
     public void launchBomb(){
         if(GameController.getInstance().getBombNumber() == 0) return;
+
+        MusicPlayer.play("/music/atomBoom.wav");
 
         List<LowEnemyPlane> lowEnemyPlaneList = gameCenterPanel.getLowEnemyPlaneList();
         List<HighEnemyPlane> highEnemyPlaneList = gameCenterPanel.getHightEnemyPlaneList();

@@ -1,6 +1,7 @@
 package controller.collision;
 
 import controller.GameController;
+import controller.MusicPlayer;
 import controller.gameEnum.Skin;
 import controller.gameEnum.Type;
 import model.bullet.BossBullet;
@@ -163,10 +164,12 @@ public class CollisionDetector {
                 if (hbRect.intersects(lepRect)) {
                     lep.decreaseHp(hb.getDemage());
                     toRemoveHeroBullet.add(hb);
+                    MusicPlayer.play("/music/hitEnemy.wav");
                     if(lep.isDead()){
                         GameUI.gameFrame.getGameCenterPanel().decreaseLowPlane(1);
                         GameController.getInstance().setScore(GameController.getInstance().getScore()+1);
                         toRemoveLow.add(lep);
+                        MusicPlayer.play("/music/enemyBoom.wav");
                         gameCenterPanel.getExplosionList().add(new Explosion(lep.getX(), lep.getY(),LowEnemyPlane.WIDTH,LowEnemyPlane.HEIGHT,Type.LOW));
                     }
                 }
@@ -179,10 +182,12 @@ public class CollisionDetector {
                 if (hbRect.intersects(hepRect)) {
                     hep.decreaseHp(hb.getDemage());
                     toRemoveHeroBullet.add(hb);
+                    MusicPlayer.play("/music/hitEnemy.wav");
                     if (hep.isDead()) {
                         GameUI.gameFrame.getGameCenterPanel().decreaseHightPlane(1);
                         GameController.getInstance().setScore(GameController.getInstance().getScore()+2);
                         toRemoveHigh.add(hep);
+                        MusicPlayer.play("/music/enemyBoom.wav");
                         gameCenterPanel.getExplosionList().add(new Explosion(hep.getX(), hep.getY(), HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT,Type.HIGH));
                     }
                 }
@@ -196,7 +201,9 @@ public class CollisionDetector {
                 bossPlane.decreaseHp(hb.getDemage());
                 toRemoveHeroBullet.add(hb);
                 GameController.getInstance().setScore(GameController.getInstance().getScore()+1);//打中一颗扣一滴血加一分
+                MusicPlayer.play("/music/hitEnemy.wav");
                 if(bossPlane.isDead()){
+                    MusicPlayer.play("/music/enemyBoom.wav");
                     //初始化爆炸图片
                     gameCenterPanel.getExplosionList().add(new Explosion(bossPlane.getX(),bossPlane.getY(),BossPlane.WIDTH,BossPlane.HEIGHT,Type.BOSS));
                     GameUI.gameFrame.getGameCenterPanel().decreaseBoss();
