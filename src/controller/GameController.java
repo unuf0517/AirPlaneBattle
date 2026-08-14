@@ -249,4 +249,8 @@ public class GameController {
     public void setCustomSpeed(int customSpeed) {
         this.customSpeedFactor = customSpeed;
     }
+
+    public static int getBossMaxHp() {
+        return bossMaxHp;
+    }
 }

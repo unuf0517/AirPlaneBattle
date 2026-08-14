@@ -65,6 +65,30 @@ public class BossPlane extends Plane{
         }
     }
 
+    public void healthBar(Graphics g){
+
+        //在boss上方画血条
+        int barW = BossPlane.WIDTH-50;
+        int barH = 3;
+        int barX = getX();
+        int barY = getY()-barH-4;
+
+        //防止血条被顶到面板外面
+        if (barY < 0) {
+            barY = 0;
+        }
+
+        //计算当前血量比例
+        int maxHp = GameController.getInstance().getBossMaxHp();
+        double ratio = (double)getHp()/maxHp;
+        if (ratio < 0)ratio = 0;
+        int fillW = (int)(barW * ratio);
+
+
+        g.setColor(Color.RED);
+        g.fillRect(barX, barY, fillW, barH);
+    }
+
     /**
      * 刷新图片索引
      */

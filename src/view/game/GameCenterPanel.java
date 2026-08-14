@@ -703,7 +703,12 @@ public class GameCenterPanel extends JPanel {
                 for(HighEnemyPlane hep: highEnemyPlaneList) hep.draw(g);
             }
             //boss
-            if(bossPlane !=null) bossPlane.draw(g);
+            if(bossPlane !=null){
+                bossPlane.draw(g);
+                bossPlane.healthBar(g);
+            }
+
+
             //道具
             if(propList!=null){
                 for(Prop pp:propList) pp.draw(g);
