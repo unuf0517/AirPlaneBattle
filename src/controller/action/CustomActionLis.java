@@ -2,7 +2,7 @@ package controller.action;
 
 import controller.GameController;
 import view.GameUI;
-import view.game.Custom.CustomPanel;
+import view.game.custom.CustomPanel;
 
 import javax.swing.*;
 import java.awt.*;

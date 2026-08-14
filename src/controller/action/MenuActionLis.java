@@ -1,9 +1,8 @@
 package controller.action;
 
 import controller.GameController;
-import controller.gameEnum.GameState;
 import view.GameUI;
-import view.game.Custom.CustomFrame;
+import view.game.custom.CustomFrame;
 import view.login.LoginFrame;
 
 import javax.swing.*;

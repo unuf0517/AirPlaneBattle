@@ -90,14 +90,6 @@ public class BossBullet extends GameObject {
         g.drawImage(bulletImage[currentIndex], getX(), getY(), null);
     }
 
-    public int getDemage() {
-        return demage;
-    }
-
-    public void setDemage(int demage) {
-        this.demage = demage;
-    }
-
     public int getSpeedX() {
         return speedX;
     }

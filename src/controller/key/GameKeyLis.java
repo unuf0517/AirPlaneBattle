@@ -10,7 +10,6 @@ import model.plane.HighEnemyPlane;
 import model.plane.LowEnemyPlane;
 import model.props.Prop;
 import view.game.GameCenterPanel;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;

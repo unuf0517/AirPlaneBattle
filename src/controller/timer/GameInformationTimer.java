@@ -1,4 +1,4 @@
-package controller.Timer;
+package controller.timer;
 
 import controller.GameController;
 import view.GameUI;

@@ -13,8 +13,6 @@ public class GameFrame extends JFrame {
     private GameCenterPanel gameCenterPanel;
     //信息面板
     private GameInformationPanel gameInformationPanel;
-    //帮助面板
-    private HelpPanel helpPanel;
     //开始游戏菜单子项
     private JMenuItem startItem;
     //暂停游戏菜单子项
@@ -25,6 +23,10 @@ public class GameFrame extends JFrame {
     private JMenuItem restartItem;
     //定义的菜单子项
     private JMenuItem customItem;
+    //帮助菜单子项
+    private JMenuItem helpItem;
+    //关于游戏菜单子项
+    private JMenuItem aboutGameItem;
 
     public GameFrame(){
         //初始化页面
@@ -55,8 +57,8 @@ public class GameFrame extends JFrame {
         restartItem = new JMenuItem("重新开始");
         customItem=new JMenuItem("自定义");
         JMenuItem exitItem = new JMenuItem("退出登录");
-        JMenuItem helpItem = new JMenuItem("帮助");
-        JMenuItem aboutGameItem = new JMenuItem("关于游戏");
+        helpItem = new JMenuItem("帮助");
+        aboutGameItem = new JMenuItem("关于游戏");
 
         //实例化动作监听
         MenuActionLis menuActionLis=new MenuActionLis();
@@ -102,6 +104,8 @@ public class GameFrame extends JFrame {
         continueItem.setEnabled(s == GameState.PAUSE);
         restartItem.setEnabled(s != GameState.WAITING);
         customItem.setEnabled(s == GameState.WAITING || s == GameState.GAME_OVER || s == GameState.VICTORY);
+        helpItem.setEnabled(s != GameState.RUNNING && s !=GameState.COUNTDOWN);
+        aboutGameItem.setEnabled(s != GameState.RUNNING && s !=GameState.COUNTDOWN);
     }
 
     private void initFrame(){

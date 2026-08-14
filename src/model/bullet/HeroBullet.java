@@ -46,8 +46,4 @@ public class HeroBullet extends GameObject {
     public int getDemage() {
         return demage;
     }
-
-    public void setDemage(int demage) {
-        this.demage = demage;
-    }
 }

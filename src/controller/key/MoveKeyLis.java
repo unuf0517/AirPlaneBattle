@@ -1,10 +1,8 @@
 package controller.key;
 
 import java.awt.event.KeyAdapter;
-
 import model.plane.HeroPlane;
 import view.game.GameCenterPanel;
-
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;

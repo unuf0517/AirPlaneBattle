@@ -2,7 +2,6 @@ package controller.collision;
 
 import controller.GameController;
 import controller.MusicPlayer;
-import controller.gameEnum.Skin;
 import controller.gameEnum.Type;
 import model.bullet.BossBullet;
 import model.bullet.EnemyBullet;
@@ -12,7 +11,6 @@ import model.plane.BossPlane;
 import model.plane.HeroPlane;
 import model.plane.LowEnemyPlane;
 import model.plane.HighEnemyPlane;
-import model.plane.Plane;
 import model.props.Prop;
 import view.GameUI;
 import view.game.GameCenterPanel;

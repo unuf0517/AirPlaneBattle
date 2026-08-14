@@ -1,7 +1,7 @@
 package view.game;
 
 import controller.GameController;
-import controller.Timer.GameInformationTimer;
+import controller.timer.GameInformationTimer;
 import controller.gameEnum.Skin;
 
 import javax.swing.*;
