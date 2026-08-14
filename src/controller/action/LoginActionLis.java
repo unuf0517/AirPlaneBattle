@@ -2,6 +2,7 @@ package controller.action;
 
 import model.AirplanebattleDO;
 import view.GameUI;
+import view.game.GameFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,8 +22,11 @@ public class LoginActionLis implements ActionListener {
                     JOptionPane.showMessageDialog(null,"请填写完整信息","温馨提示",JOptionPane.PLAIN_MESSAGE);
                 }
                 AirplanebattleDO airplanebattleDO= dao.UserDAO.login(account,password);
-                if(airplanebattleDO!=null){
+                if (airplanebattleDO != null) {
                     GameUI.loginFrame.setVisible(false);
+                    if (GameUI.gameFrame == null){
+                        GameUI.gameFrame = new GameFrame();
+                    }
                     GameUI.startFrame.setVisible(true);
                 }
                 break;

@@ -14,7 +14,7 @@ public class LoginFrame extends JFrame {
         //添加窗口监听
         addWindowListener(windowLis);
         //页面可视化
-        setVisible(false);
+        setVisible(true);
     }
 
 

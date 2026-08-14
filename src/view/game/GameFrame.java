@@ -41,7 +41,7 @@ public class GameFrame extends JFrame {
         addWindowListener(windowLis);
         refreshMenuState();
         //页面可视化
-        setVisible(true);
+        setVisible(false);
     }
 
     private void initMenu(){

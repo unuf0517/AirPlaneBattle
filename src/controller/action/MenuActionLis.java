@@ -49,7 +49,7 @@ public class MenuActionLis implements ActionListener {
                 int res2= JOptionPane.showConfirmDialog(null,"是否退出登录？", "提示", JOptionPane.YES_NO_OPTION);
                 if(res2 == 0){
                     GameController.getInstance().resetState();
-                    new LoginFrame().setVisible(true);
+                    GameUI.loginFrame.setVisible(true);
                 }else{
                     GameController.getInstance().continueGame();
                 }
