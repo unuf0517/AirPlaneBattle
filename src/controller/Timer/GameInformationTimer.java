@@ -17,7 +17,7 @@ public class GameInformationTimer {
             int up=GameUI.gameFrame.getGameCenterPanel().getHeroPlane().getHp();
             GameUI.gameFrame.getGameInformationPanel().getHealthLabel().setText("生命值: "+up);
             //关卡
-            int level = GameController.currentLevel;
+            int level = GameController.getInstance().getLevel();
             GameUI.gameFrame.getGameInformationPanel().getLevelLabel().setText("当前第 "+level+" 关");
             //核弹数
             int bombNumber = GameController.getInstance().getBombNumber();

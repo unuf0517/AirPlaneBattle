@@ -4,5 +4,7 @@ public enum GameState {
     WAITING,
     RUNNING,
     PAUSE,
-    END
+    COUNTDOWN,
+    GAME_OVER,
+    VICTORY
 }

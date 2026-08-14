@@ -2,6 +2,7 @@ package model.plane;
 
 import controller.GameController;
 import controller.gameEnum.Skin;
+import controller.gameEnum.Type;
 import model.effect.Explosion;
 import view.GameUI;
 import javax.swing.*;
@@ -111,20 +112,17 @@ public class HeroPlane extends Plane {
     public void decreaseHp(int damage) {
         if(hp>0){
             hp -= damage;
-            setInvincibleTime(14);
-            if(GameController.getInstance().getSkin() == Skin.COLOR){
-                //彩色主题下初高级英雄机爆炸特效一致
-                GameUI.gameFrame.getGameCenterPanel().getExplosionList().add(new Explosion(getX(),getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.L_HERO));
-            }else{
-                //双倍子弹且灰色主题要用高级特有的爆炸特效
-                if(isDoubleFire()){
-                    GameUI.gameFrame.getGameCenterPanel().getExplosionList().add(new Explosion(getX(),getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.H_HERO));
-                }else{
-                    GameUI.gameFrame.getGameCenterPanel().getExplosionList().add(new Explosion(getX(),getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.L_HERO));
-                }
+
+            if (hp > 0) {
+                Skin skin = GameController.getInstance().getSkin();
+                Type t = (skin == Skin.GRAY && isDoubleFire()) ? Type.H_HERO : Type.L_HERO;
+                GameUI.gameFrame.getGameCenterPanel().getExplosionList().add(new Explosion(getX(), getY(), HeroPlane.WIDTH, HeroPlane.HEIGHT, t));
+                //回到初始位置
+                setX(GameUI.gameFrame.getGameCenterPanel().getWidth() / 2 - HeroPlane.WIDTH / 2);
+                setY(GameUI.gameFrame.getGameCenterPanel().getHeight() - HeroPlane.HEIGHT);
+                setInvincibleTime(14);
             }
-            setX(GameUI.gameFrame.getGameCenterPanel().getWidth()/2-HeroPlane.WIDTH/2);
-            setY(GameUI.gameFrame.getGameCenterPanel().getHeight()-HeroPlane.HEIGHT);
+
         }
 
     }

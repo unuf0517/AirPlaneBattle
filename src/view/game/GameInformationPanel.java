@@ -10,27 +10,27 @@ import java.awt.*;
 public class GameInformationPanel extends JPanel {
     //创建背景图片实例
     private Image backgroundImage = new ImageIcon(getClass().getResource("/images/game/color/InformationImage.jpg")).getImage();
-    private JLabel scoreLabel=new JLabel("得分: *");
-    private JLabel healthLabel=new JLabel("生命值: *");
-    private JLabel levelLabel=new JLabel("当前第 * 关");
-    private JLabel bombNumberLabel=new JLabel("拥有核弹 * 枚");
-    private JLabel overEnemyNumberLabel=new JLabel("越过防线敌机数: * 架");
-    private JLabel enemyNumberLaber=new JLabel("未出现敌机数:");
-    private JLabel lowEnemyNumberLaber=new JLabel("剩余初级敌机:*架");
-    private JLabel highEnemyNumberLaber=new JLabel("剩余高级敌机:*架");
-    private JLabel bossEnemyNumberLaber=new JLabel("敌机boss:*架");
-    private Image lowEnemyImage;
-    private Image highEnemyImage;
-    private Image bossEnemyImage;
+    private static JLabel scoreLabel=new JLabel("得分: *");
+    private static JLabel healthLabel=new JLabel("生命值: *");
+    private static JLabel levelLabel=new JLabel("当前第 * 关");
+    private static JLabel bombNumberLabel=new JLabel("拥有核弹 * 枚");
+    private static JLabel overEnemyNumberLabel=new JLabel("越过防线敌机数: * 架");
+    private static JLabel enemyNumberLaber=new JLabel("未出现敌机数:");
+    private static JLabel lowEnemyNumberLaber=new JLabel("剩余初级敌机:*架");
+    private static JLabel highEnemyNumberLaber=new JLabel("剩余高级敌机:*架");
+    private static JLabel bossEnemyNumberLaber=new JLabel("敌机boss:*架");
+    private static Image lowEnemyImage;
+    private static Image highEnemyImage;
+    private static Image bossEnemyImage;
     //彩色飞机地址
-    private String[] C_PATH={
+    private static String[] C_PATH={
             "/images/game/color/plane/enemy1_1.png",
             "/images/game/color/plane/enemy2_1.png",
             "/images/game/color/plane/boss1_1.png"
 
     };
     //灰色飞机地址
-    private String[] G_PATH={
+    private static String[] G_PATH={
             "/images/game/gray/plane/enemy1_1.png",
             "/images/game/gray/plane/enemy2_1.png",
             "/images/game/gray/plane/boss.png"
@@ -51,20 +51,20 @@ public class GameInformationPanel extends JPanel {
     private RadarPanel radarPanel = new RadarPanel();
 
     public GameInformationPanel(){
-        //根据主题色设置图片
-        if(GameController.getInstance().getSkin() == Skin.COLOR){
-            lowEnemyImage = new ImageIcon((getClass().getResource(C_PATH[0]))).getImage();
-            highEnemyImage = new ImageIcon((getClass().getResource(C_PATH[1]))).getImage();
-            bossEnemyImage = new ImageIcon((getClass().getResource(C_PATH[2]))).getImage();
-        }else{
-            lowEnemyImage = new ImageIcon((getClass().getResource(G_PATH[0]))).getImage();
-            highEnemyImage = new ImageIcon((getClass().getResource(G_PATH[1]))).getImage();
-            bossEnemyImage = new ImageIcon((getClass().getResource(G_PATH[2]))).getImage();
-        }
+        loadImage();
         //设置为自由布局
         setLayout(null);
         //设置面板大小
         setPreferredSize(new Dimension(220, 620));
+
+        setLabel();
+
+        //雷达面板
+        radarPanel.setBounds(35, 430, 150, 150);
+        add(radarPanel);
+    }
+
+    public void setLabel(){
         //设置固定JLabel位置
         scoreLabel.setBounds(10,10,180,30);
         healthLabel.setBounds(10,40,180,30);
@@ -110,11 +110,37 @@ public class GameInformationPanel extends JPanel {
         add(lowEnemyNumberLaber);
         add(highEnemyNumberLaber);
         add(bossEnemyNumberLaber);
-
-        //雷达面板
-        radarPanel.setBounds(35, 430, 150, 150);
-        add(radarPanel);
     }
+
+    public static void loadImage(){
+        //根据主题色设置图片
+        if(GameController.getInstance().getSkin() == Skin.COLOR){
+            lowEnemyImage = new ImageIcon((GameInformationPanel.class.getResource(C_PATH[0]))).getImage();
+            highEnemyImage = new ImageIcon((GameInformationPanel.class.getResource(C_PATH[1]))).getImage();
+            bossEnemyImage = new ImageIcon((GameInformationPanel.class.getResource(C_PATH[2]))).getImage();
+        }else{
+            lowEnemyImage = new ImageIcon((GameInformationPanel.class.getResource(G_PATH[0]))).getImage();
+            highEnemyImage = new ImageIcon((GameInformationPanel.class.getResource(G_PATH[1]))).getImage();
+            bossEnemyImage = new ImageIcon((GameInformationPanel.class.getResource(G_PATH[2]))).getImage();
+        }
+    }
+    //更新主题
+    public static void reloadImage(){
+        loadImage();
+        //设置字体颜色
+        //根据底色选择字体颜色防止字迹不清
+        Color color = GameController.getInstance().getSkin() == Skin.COLOR ? Color.WHITE : Color.BLACK;
+        scoreLabel.setForeground(color);
+        healthLabel.setForeground(color);
+        levelLabel.setForeground(color);
+        bombNumberLabel.setForeground(color);
+        overEnemyNumberLabel.setForeground(color);
+        enemyNumberLaber.setForeground(color);
+        lowEnemyNumberLaber.setForeground(color);
+        highEnemyNumberLaber.setForeground(color);
+        bossEnemyNumberLaber.setForeground(color);
+    }
+
 
     /**
      * @description: 绘制
@@ -138,51 +164,14 @@ public class GameInformationPanel extends JPanel {
 
     }
 
-    public RadarPanel getRadarPanel() {
-        return radarPanel;
-    }
 
-    public void setRadarPanel(RadarPanel radarPanel) {
-        this.radarPanel = radarPanel;
-    }
-
-    public JLabel getScoreLabel() {
-        return scoreLabel;
-    }
-
-    public JLabel getHealthLabel() {
-        return healthLabel;
-    }
-
-    public JLabel getLevelLabel() {
-        return levelLabel;
-    }
-
-    public JLabel getBombNumberLabel() {
-        return bombNumberLabel;
-    }
-
-    public JLabel getOverEnemyNumberLabel() {
-        return overEnemyNumberLabel;
-    }
-
-    public JLabel getEnemyNumberLaber() {
-        return enemyNumberLaber;
-    }
-
-    public JLabel getLowEnemyNumberLaber() {
-        return lowEnemyNumberLaber;
-    }
-
-    public JLabel getHighEnemyNumberLaber() {
-        return highEnemyNumberLaber;
-    }
-
-    public JLabel getBossEnemyNumberLaber() {
-        return bossEnemyNumberLaber;
-    }
 
     public void onGameStart(){
+        //重置飞机数量计数器
+        noAppearedLowPlane = GameController.getInstance().getLowEnemyMaxNumber();
+        noAppearedHightPlane = GameController.getInstance().getHighEnemyMaxNumber();
+        noAppearedPlane = noAppearedLowPlane + noAppearedHightPlane + 1;
+
         radarPanel.onGameStart();
         gameInformationTimer.onGameStart();
     }
@@ -234,5 +223,49 @@ public class GameInformationPanel extends JPanel {
         if(noAppearedHightPlane > 0){
             noAppearedHightPlane--;
         }
+    }
+
+    public RadarPanel getRadarPanel() {
+        return radarPanel;
+    }
+
+    public void setRadarPanel(RadarPanel radarPanel) {
+        this.radarPanel = radarPanel;
+    }
+
+    public JLabel getScoreLabel() {
+        return scoreLabel;
+    }
+
+    public JLabel getHealthLabel() {
+        return healthLabel;
+    }
+
+    public JLabel getLevelLabel() {
+        return levelLabel;
+    }
+
+    public JLabel getBombNumberLabel() {
+        return bombNumberLabel;
+    }
+
+    public JLabel getOverEnemyNumberLabel() {
+        return overEnemyNumberLabel;
+    }
+
+    public JLabel getEnemyNumberLaber() {
+        return enemyNumberLaber;
+    }
+
+    public JLabel getLowEnemyNumberLaber() {
+        return lowEnemyNumberLaber;
+    }
+
+    public JLabel getHighEnemyNumberLaber() {
+        return highEnemyNumberLaber;
+    }
+
+    public JLabel getBossEnemyNumberLaber() {
+        return bossEnemyNumberLaber;
     }
 }

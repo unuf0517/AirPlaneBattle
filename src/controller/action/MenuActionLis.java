@@ -3,6 +3,7 @@ package controller.action;
 import controller.GameController;
 import controller.gameEnum.GameState;
 import view.GameUI;
+import view.game.Custom.CustomFrame;
 import view.login.LoginFrame;
 
 import javax.swing.*;
@@ -33,25 +34,34 @@ public class MenuActionLis implements ActionListener {
                 if (res == 0) {
                     GameController.getInstance().restartGame();
                 }else{
-                    GameController.getInstance().continueGame();
+                    if(GameUI.gameFrame.getGameCenterPanel().getHeroPlane() != null){
+                        GameController.getInstance().continueGame();
+                    }
                 }
                 break;
             case "custom":
                 System.out.println("自定义");
+                GameUI.gameFrame.setVisible(false);
+                new CustomFrame();
                 break;
             case "exit":
                 System.out.println("退出登录");
+                GameController.getInstance().pauseGame();
                 int res2= JOptionPane.showConfirmDialog(null,"是否退出登录？", "提示", JOptionPane.YES_NO_OPTION);
                 if(res2 == 0){
                     GameController.getInstance().resetState();
                     new LoginFrame().setVisible(true);
+                }else{
+                    GameController.getInstance().continueGame();
                 }
                 break;
             case "help":
                 System.out.println("帮助");
+                GameUI.gameFrame.getGameCenterPanel().toggleHelp();
                 break;
             case "aboutGame":
                 System.out.println("关于游戏");
+                GameUI.gameFrame.getGameCenterPanel().toggleAbout();
                 break;
             default:
                 System.out.println("未知操作");

@@ -2,6 +2,7 @@ package controller.collision;
 
 import controller.GameController;
 import controller.gameEnum.Skin;
+import controller.gameEnum.Type;
 import model.bullet.BossBullet;
 import model.bullet.EnemyBullet;
 import model.bullet.HeroBullet;
@@ -10,6 +11,7 @@ import model.plane.BossPlane;
 import model.plane.HeroPlane;
 import model.plane.LowEnemyPlane;
 import model.plane.HighEnemyPlane;
+import model.plane.Plane;
 import model.props.Prop;
 import view.GameUI;
 import view.game.GameCenterPanel;
@@ -62,20 +64,14 @@ public class CollisionDetector {
             Rectangle epRect = lep.getRectangle(LowEnemyPlane.WIDTH, LowEnemyPlane.HEIGHT);
             if (heroRect.intersects(epRect)) {
                 //敌机原地爆炸，创建爆炸图片实例
-                gameCenterPanel.getExplosionList().add(new Explosion(lep.getX(), lep.getY(),LowEnemyPlane.WIDTH,LowEnemyPlane.HEIGHT, Explosion.Type.LOW));
-                if(GameController.getInstance().getSkin() == Skin.COLOR){
-                    //彩色主题下初高级英雄机爆炸特效一致
-                    gameCenterPanel.getExplosionList().add(new Explosion(hero.getX(),hero.getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.L_HERO));
-                }else{
-                    //双倍子弹且灰色主题要用高级特有的爆炸特效
-                    if(hero.isDoubleFire()){
-                        gameCenterPanel.getExplosionList().add(new Explosion(hero.getX(),hero.getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.H_HERO));
-                    }else{
-                        gameCenterPanel.getExplosionList().add(new Explosion(hero.getX(),hero.getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.L_HERO));
-                    }
+                gameCenterPanel.getExplosionList().add(new Explosion(lep.getX(), lep.getY(),LowEnemyPlane.WIDTH,LowEnemyPlane.HEIGHT,Type.LOW));
+                hero.decreaseHp(1);
+                if (hero.getHp() <= 0) {
+                    gameCenterPanel.killHero();
                 }
                 toRemoveLow.add(lep);
-                hero.decreaseHp(1);
+
+
             }
         }
         gameCenterPanel.getLowEnemyPlaneList().removeAll(toRemoveLow);//for外统一删
@@ -85,20 +81,12 @@ public class CollisionDetector {
         for (HighEnemyPlane hep : gameCenterPanel.getHightEnemyPlaneList()) {
             Rectangle epRect = hep.getRectangle(HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT);
             if (heroRect.intersects(epRect)) {
-                gameCenterPanel.getExplosionList().add(new Explosion(hep.getX(), hep.getY(), HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT, Explosion.Type.HIGH));
-                if(GameController.getInstance().getSkin() == Skin.COLOR){
-                    //彩色主题下初高级英雄机爆炸特效一致
-                    gameCenterPanel.getExplosionList().add(new Explosion(hero.getX(),hero.getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.L_HERO));
-                }else{
-                    //双倍子弹且灰色主题要用高级特有的爆炸特效
-                    if(hero.isDoubleFire()){
-                        gameCenterPanel.getExplosionList().add(new Explosion(hero.getX(),hero.getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.H_HERO));
-                    }else{
-                        gameCenterPanel.getExplosionList().add(new Explosion(hero.getX(),hero.getY(),HeroPlane.WIDTH,HeroPlane.HEIGHT, Explosion.Type.L_HERO));
-                    }
+                gameCenterPanel.getExplosionList().add(new Explosion(hep.getX(), hep.getY(), HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT,Type.HIGH));
+                hero.decreaseHp(1);
+                if (hero.getHp() <= 0) {
+                    gameCenterPanel.killHero();
                 }
                 toRemoveHigh.add(hep);
-                hero.decreaseHp(1);
             }
         }
         gameCenterPanel.getHightEnemyPlaneList().removeAll(toRemoveHigh);
@@ -109,8 +97,12 @@ public class CollisionDetector {
             Rectangle bRect = bossPlane.getRectangle(BossPlane.WIDTH, BossPlane.HEIGHT);
             if (heroRect.intersects(bRect)) {
                 hero.decreaseHp(1);
+                if (hero.getHp() <= 0) {
+                    gameCenterPanel.killHero();
+                }
             }
         }
+
     }
 
     //子弹碰撞检测
@@ -166,6 +158,7 @@ public class CollisionDetector {
             Rectangle hbRect = hb.getRectangle(HeroBullet.WIDTH,HeroBullet.HEIGHT);
             //=====初级敌机=====
             for(LowEnemyPlane lep : lowEnemyPlaneList) {
+                if (toRemoveLow.contains(lep)) continue;//防止重复判定
                 Rectangle lepRect = lep.getRectangle(LowEnemyPlane.WIDTH, LowEnemyPlane.HEIGHT);
                 if (hbRect.intersects(lepRect)) {
                     lep.decreaseHp(hb.getDemage());
@@ -174,13 +167,14 @@ public class CollisionDetector {
                         GameUI.gameFrame.getGameCenterPanel().decreaseLowPlane(1);
                         GameController.getInstance().setScore(GameController.getInstance().getScore()+1);
                         toRemoveLow.add(lep);
-                        gameCenterPanel.getExplosionList().add(new Explosion(lep.getX(), lep.getY(),LowEnemyPlane.WIDTH,LowEnemyPlane.HEIGHT, Explosion.Type.LOW));
+                        gameCenterPanel.getExplosionList().add(new Explosion(lep.getX(), lep.getY(),LowEnemyPlane.WIDTH,LowEnemyPlane.HEIGHT,Type.LOW));
                     }
                 }
             }
 
             //=====高级敌机=====
             for (HighEnemyPlane hep : highEnemyPlaneList) {
+                if (toRemoveHigh.contains(hep)) continue;
                 Rectangle hepRect = hep.getRectangle(HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT);
                 if (hbRect.intersects(hepRect)) {
                     hep.decreaseHp(hb.getDemage());
@@ -189,7 +183,7 @@ public class CollisionDetector {
                         GameUI.gameFrame.getGameCenterPanel().decreaseHightPlane(1);
                         GameController.getInstance().setScore(GameController.getInstance().getScore()+2);
                         toRemoveHigh.add(hep);
-                        gameCenterPanel.getExplosionList().add(new Explosion(hep.getX(), hep.getY(), HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT, Explosion.Type.HIGH));
+                        gameCenterPanel.getExplosionList().add(new Explosion(hep.getX(), hep.getY(), HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT,Type.HIGH));
                     }
                 }
             }
@@ -204,7 +198,7 @@ public class CollisionDetector {
                 GameController.getInstance().setScore(GameController.getInstance().getScore()+1);//打中一颗扣一滴血加一分
                 if(bossPlane.isDead()){
                     //初始化爆炸图片
-                    gameCenterPanel.getExplosionList().add(new Explosion(bossPlane.getX(),bossPlane.getY(),BossPlane.WIDTH,BossPlane.HEIGHT, model.effect.Explosion.Type.BOSS));
+                    gameCenterPanel.getExplosionList().add(new Explosion(bossPlane.getX(),bossPlane.getY(),BossPlane.WIDTH,BossPlane.HEIGHT,Type.BOSS));
                     GameUI.gameFrame.getGameCenterPanel().decreaseBoss();
                     gameCenterPanel.setBossPlane(null);
                 }
@@ -220,13 +214,17 @@ public class CollisionDetector {
         List<EnemyBullet> enemyBulletList = gameCenterPanel.getEnemyBulletList();
         if(enemyBulletList.isEmpty()) return;
         HeroPlane heroPlane = gameCenterPanel.getHeroPlane();
+        if (heroPlane == null || heroPlane.isInvincible()) return;
         Rectangle hpRect = heroPlane.getRectangle(HeroPlane.WIDTH,HeroPlane.HEIGHT);
         List<EnemyBullet> toRemoveBullet = new ArrayList<>();
         for(EnemyBullet eb : enemyBulletList){
             Rectangle bulletRect = eb.getRectangle(EnemyBullet.WIDTH,EnemyBullet.HEIGHT);
-            if(bulletRect.intersects(hpRect)){
+            if (bulletRect.intersects(hpRect)) {
+                heroPlane.decreaseHp(1);
+                if (heroPlane.getHp() <= 0) {
+                    gameCenterPanel.killHero();
+                }
                 toRemoveBullet.add(eb);
-                heroPlane.decreaseHp(eb.getDemage());
             }
         }
         enemyBulletList.removeAll(toRemoveBullet);
@@ -244,7 +242,10 @@ public class CollisionDetector {
             Rectangle bbRect = bb.getRectangle(BossBullet.WIDTH, BossBullet.HEIGHT);
             if (bbRect.intersects(hpRect)) {
                 toRemoveBoss.add(bb);
-                heroPlane.decreaseHp(bb.getDemage());
+                heroPlane.decreaseHp(1);
+                if (heroPlane.getHp() <= 0) {
+                    gameCenterPanel.killHero();
+                }
             }
         }
         bossBulletList.removeAll(toRemoveBoss);

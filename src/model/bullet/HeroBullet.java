@@ -9,9 +9,9 @@ import java.awt.*;
 
 public class HeroBullet extends GameObject {
     //子弹图片
-    private Image bulletImage;
-    private String C_PATH="/images/game/color/bullet/heroBullet2.png";
-    private String G_PATH="/images/game/gray/bullet/heroBullet.png";
+    private static Image bulletImage;
+    private static String C_PATH="/images/game/color/bullet/heroBullet2.png";
+    private static String G_PATH="/images/game/gray/bullet/heroBullet.png";
     //子弹的宽高
     public static final int WIDTH = 12;
     public static final int HEIGHT = 25;
@@ -21,13 +21,22 @@ public class HeroBullet extends GameObject {
 
     public HeroBullet(int x, int y) {
         super(x, y, -10);
+        loadImage();
+    }
+
+    private static void loadImage(){
         if(GameController.getInstance().getSkin() == Skin.COLOR){
-            bulletImage=new ImageIcon(getClass().getResource(C_PATH)).getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
+            bulletImage=new ImageIcon(HeroBullet.class.getResource(C_PATH)).getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
         }else{
-            bulletImage=new ImageIcon(getClass().getResource(G_PATH)).getImage().getScaledInstance(WIDTH-4, HEIGHT-5, Image.SCALE_SMOOTH);
+            bulletImage=new ImageIcon(HeroBullet.class.getResource(G_PATH)).getImage().getScaledInstance(WIDTH-4, HEIGHT-5, Image.SCALE_SMOOTH);
         }
     }
 
+    //重置皮肤
+    public static void reloadImages() {
+        bulletImage = null;
+        loadImage();
+    }
 
     @Override
     public void draw(Graphics g) {

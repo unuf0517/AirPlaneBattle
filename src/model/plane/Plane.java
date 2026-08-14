@@ -1,5 +1,6 @@
 package model.plane;
 
+import controller.GameController;
 import model.GameObject;
 
 public abstract class Plane extends GameObject {
@@ -12,6 +13,7 @@ public abstract class Plane extends GameObject {
 
     public Plane(int x,int y,int speedY){
         super(x,y,speedY);
+        setSpeedFactor(GameController.getCustomSpeed());
     }
 
     /**

@@ -9,12 +9,12 @@ import java.awt.*;
 
 public class BossBullet extends GameObject {
     //子弹图片
-    private Image[] bulletImage;
+    private static Image[] bulletImage;
     //子弹的宽高
     public static final int WIDTH = 50;
     public static final int HEIGHT = 50;
 
-    private String[] C_PATH = {
+    private static String[] C_PATH = {
             "/images/game/color/bullet/bossBullet/1.png",
             "/images/game/color/bullet/bossBullet/2.png",
             "/images/game/color/bullet/bossBullet/3.png",
@@ -28,7 +28,7 @@ public class BossBullet extends GameObject {
             "/images/game/color/bullet/bossBullet/11.png",
             "/images/game/color/bullet/bossBullet/12.png"
     };
-    private String[] G_PATH = {
+    private static String[] G_PATH = {
             "/images/game/gray/bullet/bossBullet/1.png",
             "/images/game/gray/bullet/bossBullet/2.png",
             "/images/game/gray/bullet/bossBullet/3.png",
@@ -58,7 +58,7 @@ public class BossBullet extends GameObject {
 
     }
 
-    private void loadImage(){
+    private static void loadImage(){
         if(GameController.getInstance().getSkin() == Skin.COLOR){
             bulletImage = new Image[C_PATH.length];
             for(int i=0;i<C_PATH.length;i++){
@@ -70,6 +70,12 @@ public class BossBullet extends GameObject {
                 bulletImage[i] = new ImageIcon(BossBullet.class.getResource(G_PATH[i])).getImage().getScaledInstance(WIDTH,HEIGHT, Image.SCALE_SMOOTH);
             }
         }
+    }
+
+    //重置皮肤
+    public static void reloadImages() {
+        bulletImage = null;
+        loadImage();
     }
 
 

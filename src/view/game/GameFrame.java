@@ -13,6 +13,8 @@ public class GameFrame extends JFrame {
     private GameCenterPanel gameCenterPanel;
     //信息面板
     private GameInformationPanel gameInformationPanel;
+    //帮助面板
+    private HelpPanel helpPanel;
     //开始游戏菜单子项
     private JMenuItem startItem;
     //暂停游戏菜单子项
@@ -21,6 +23,8 @@ public class GameFrame extends JFrame {
     private JMenuItem continueItem;
     //重新游戏菜单子项
     private JMenuItem restartItem;
+    //定义的菜单子项
+    private JMenuItem customItem;
 
     public GameFrame(){
         //初始化页面
@@ -33,7 +37,7 @@ public class GameFrame extends JFrame {
         WindowLis windowLis = new WindowLis();
         //窗口添加监听
         addWindowListener(windowLis);
-
+        refreshMenuState();
         //页面可视化
         setVisible(true);
     }
@@ -49,7 +53,7 @@ public class GameFrame extends JFrame {
         stopItem = new JMenuItem("暂停游戏");
         continueItem=new JMenuItem("继续游戏");
         restartItem = new JMenuItem("重新开始");
-        JMenuItem customItem=new JMenuItem("自定义");
+        customItem=new JMenuItem("自定义");
         JMenuItem exitItem = new JMenuItem("退出登录");
         JMenuItem helpItem = new JMenuItem("帮助");
         JMenuItem aboutGameItem = new JMenuItem("关于游戏");
@@ -97,6 +101,7 @@ public class GameFrame extends JFrame {
         stopItem.setEnabled(s == GameState.RUNNING);
         continueItem.setEnabled(s == GameState.PAUSE);
         restartItem.setEnabled(s != GameState.WAITING);
+        customItem.setEnabled(s == GameState.WAITING || s == GameState.GAME_OVER || s == GameState.VICTORY);
     }
 
     private void initFrame(){
@@ -121,22 +126,16 @@ public class GameFrame extends JFrame {
         gameInformationPanel = new GameInformationPanel();
         //添加信息面板
         add(gameInformationPanel, BorderLayout.EAST);
+        //添加
     }
 
     public GameCenterPanel getGameCenterPanel() {
         return gameCenterPanel;
     }
 
-    public void setGameCenterPanel(GameCenterPanel gameCenterPanel) {
-        this.gameCenterPanel = gameCenterPanel;
-    }
-
     public GameInformationPanel getGameInformationPanel() {
         return gameInformationPanel;
     }
 
-    public void setGameInformationPanel(GameInformationPanel gameInformationPanel) {
-        this.gameInformationPanel = gameInformationPanel;
-    }
 
 }

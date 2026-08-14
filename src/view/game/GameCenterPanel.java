@@ -4,7 +4,8 @@ import controller.GameController;
 import controller.collision.CollisionDetector;
 import controller.gameEnum.GameState;
 import controller.gameEnum.Skin;
-import controller.key.BombKeyLis;
+import controller.gameEnum.Type;
+import controller.key.GameKeyLis;
 import controller.key.MoveKeyLis;
 import model.bullet.BossBullet;
 import model.bullet.EnemyBullet;
@@ -19,6 +20,7 @@ import model.props.Bee;
 import model.props.DoubleFire;
 import model.props.Prop;
 import view.GameUI;
+import view.game.Custom.AboutPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,12 +29,23 @@ import java.util.List;
 import java.util.Random;
 
 public class GameCenterPanel extends JPanel {
-    //彩色游戏待机背景
-    private Image colorBackgroundImage = new ImageIcon(getClass().getResource("/images/game/color/beijing.jpg")).getImage();
-    //灰色游戏待机背景
-    private Image grayBackgroundImage = new ImageIcon(getClass().getResource("/images/game/gray/beijing.png")).getImage();
+    //游戏待机背景
+    private static Image[] backgroundImage = {
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/color/beijing.jpg")).getImage(),
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/gray/beijing.png")).getImage()
+    };
+    //暂停
+    private static Image[] pauseImage = {
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/color/pause.png")).getImage(),
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/gray/pause.png")).getImage()
+    };
+    //游戏结束
+    private static Image[] gameOverImage = {
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/color/gameover.png")).getImage(),
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/gray/gameover.png")).getImage()
+    };
     //游戏地图
-    private Image mapImage;
+    private static Image mapImage;
     //彩色游戏地图
     private static final String[] C_MAP={
             "/images/game/color/map/1.jpg",
@@ -65,7 +78,7 @@ public class GameCenterPanel extends JPanel {
     //英雄机移动键盘监听
     private MoveKeyLis moveKeyLis;
     //核弹键盘监听
-    private BombKeyLis bombKeyLis;
+    private GameKeyLis gameKeyLis;
     //初级敌机敌机集合
     private List<LowEnemyPlane> lowEnemyPlaneList=new ArrayList<>();
     //高级敌机集合
@@ -110,14 +123,30 @@ public class GameCenterPanel extends JPanel {
     private Timer enemyBulletTimer;
     //敌机子弹移动计时器
     private Timer enemyBulletMoveTimer;
+    //boss是否生成
+    private boolean bossSpawned = false;
+    //英雄机最后一次爆炸
+    private boolean heroDying = false;
+    private Explosion heroDeathExplosion = null;
+    //倒计时
+    private int countdownSeconds;
+    //倒计时计时器
+    private Timer countdownTimer;
+    //帮助面板
+    private HelpPanel helpPanel;
+    private GameState preHelpState;
+    //关于面板
+    private AboutPanel aboutPanel;
+    private GameState preAboutState;
 
 
-    private final Random r=new Random();
+    private static final Random r=new Random();
 
     public GameCenterPanel() {
+        setLayout(new BorderLayout());
         //根据主题设计游戏地图
         if(GameController.getInstance().getSkin() == Skin.COLOR){
-            mapImage = new ImageIcon(getClass().getResource(C_MAP[r.nextInt(9)+1])).getImage();
+            mapImage = new ImageIcon(getClass().getResource(C_MAP[r.nextInt(C_MAP.length)])).getImage();
         }else{
             mapImage = new ImageIcon(getClass().getResource(G_MAP[0])).getImage();
         }
@@ -154,18 +183,22 @@ public class GameCenterPanel extends JPanel {
             if (bossPlane !=null) bossPlane.startAnimation();
             for (Explosion es : explosionList) es.nextFrame();
             explosionList.removeIf(Explosion::isFinished);//播放完爆炸图片就释放
+            if (heroDeathExplosion != null && heroDeathExplosion.isFinished()) {
+                heroDeathExplosion = null;
+                GameController.getInstance().endGame();
+            }
             repaint();
         });
 
         //实例化英雄机移动键盘监听
         moveKeyLis = new MoveKeyLis(this);
-        //实例化释放核弹键盘监听
-        bombKeyLis = new BombKeyLis(this);
+        //实例化释放键盘监听
+        gameKeyLis = new GameKeyLis(this);
         //聚焦
         setFocusable(true);
         //添加键盘监听
         addKeyListener(moveKeyLis);
-        addKeyListener(bombKeyLis);
+        addKeyListener(gameKeyLis);
 
         //更新英雄机移动
         moveTimer=new Timer(15,e->{
@@ -196,7 +229,7 @@ public class GameCenterPanel extends JPanel {
         });
 
         //初级高级敌机、道具生成
-        spawnTimer = new Timer(1500, e -> {//每1秒生成一架
+        spawnTimer = new Timer(1500, e -> {
             int noLow = GameUI.gameFrame.getGameInformationPanel().getNoAppearedLowPlane();
             int noHight = GameUI.gameFrame.getGameInformationPanel().getNoAppearedHightPlane();
             int z = r.nextInt(10)+1;
@@ -230,10 +263,11 @@ public class GameCenterPanel extends JPanel {
                 });
             }
 
-            if(noLow + noHight ==0 && bossPlane == null){
+            if(noLow + noHight ==0 && !bossSpawned){
                 //实例化boss
                 GameUI.gameFrame.getGameInformationPanel().appearedPlane();
                 bossPlane = new BossPlane(getWidth()/2-BossPlane.WIDTH/2,-BossPlane.HEIGHT);
+                bossSpawned = true;
             }
         });
 
@@ -275,7 +309,10 @@ public class GameCenterPanel extends JPanel {
         });
         //实例化碰撞检测对象
         CollisionDetector collisionDetector=new CollisionDetector(this);
-        collisionTimer = new Timer(16, e -> collisionDetector.detect());
+        collisionTimer = new Timer(16, e -> {
+            collisionDetector.detect();
+            checkWinLose();
+        });
         //英雄机子弹生成
         bulletTimer=new Timer(170,e->{
             if(heroPlane==null) return;
@@ -356,10 +393,159 @@ public class GameCenterPanel extends JPanel {
             bossBulletList.removeIf(b -> b.getY() > mapH);
             repaint();
         });
+
+        helpPanel = new HelpPanel();
+        aboutPanel = new AboutPanel();
+
+        JPanel overlayPanel = new JPanel(null);
+        overlayPanel.setOpaque(false);
+        overlayPanel.add(helpPanel);
+        overlayPanel.add(aboutPanel);
+
+        helpPanel.setBounds(0, 0, 400, 600);
+        aboutPanel.setBounds(0, 0, 400, 600);
+
+        helpPanel.setVisible(false);
+        aboutPanel.setVisible(false);
+
+        add(overlayPanel, BorderLayout.CENTER);
+    }
+
+    public void killHero() {
+        if (heroDying || heroPlane == null) return;//防重复触发
+        heroDying = true;
+        Skin skin = GameController.getInstance().getSkin();
+        // 灰色主题+双倍火力用高级英雄机爆炸图其余用普通英雄机爆炸图
+        Type t = (skin == Skin.GRAY && heroPlane.isDoubleFire()) ? Type.H_HERO : Type.L_HERO;
+        heroDeathExplosion = new Explosion(heroPlane.getX(), heroPlane.getY(), HeroPlane.WIDTH, HeroPlane.HEIGHT, t);
+        explosionList.add(heroDeathExplosion);
+        onGamePause();
+        //只保留爆炸动画定时器继续播放
+        animationTimer.start();
+        repaint();
+    }
+
+    public void checkWinLose() {
+        if (GameController.getInstance().getGameStatus() != GameState.RUNNING) return;
+        GameController gc = GameController.getInstance();
+        //失败
+        if (gc.getOverNumber() > 5) {
+            gc.endGame();
+            return;
+        }
+        //过关
+        GameInformationPanel gameInformationPanel = GameUI.gameFrame.getGameInformationPanel();
+        boolean allSpawned = gameInformationPanel.getNoAppearedLowPlane() == 0 && gameInformationPanel.getNoAppearedHightPlane() == 0;
+        boolean noEnemies  = lowEnemyPlaneList.isEmpty() && highEnemyPlaneList.isEmpty();
+        boolean bossDone   = (GameController.bossMaxNumber == 0) || (bossSpawned && bossPlane == null);
+        if (allSpawned && noEnemies && bossDone) {
+            if (gc.getLevel() >= GameController.MAX_LEVEL) {
+                showVictory();
+            } else {
+                gc.setLevel(gc.getLevel()+1);//关数加1
+                startCountdown(gc.getLevel());
+            }
+        }
+    }
+    private void startCountdown(int nextLevel) {
+        GameController.getInstance().setGameStatus(GameState.COUNTDOWN);
+        GameUI.gameFrame.refreshMenuState();
+        //暂停游戏
+        onGamePause();
+        GameUI.gameFrame.getGameInformationPanel().onGamePause();
+        GameUI.gameFrame.getGameInformationPanel().getRadarPanel().onGamePause();
+
+        countdownSeconds = 3;
+        repaint();
+        //倒计时
+        countdownTimer = new Timer(1000, e -> {
+            countdownSeconds--;
+            if (countdownSeconds <= 0) {
+                countdownTimer.stop();
+                proceedNextLevel();
+            } else {
+                repaint();
+            }
+        });
+        countdownTimer.start();
+    }
+
+    //下一关
+    private void proceedNextLevel() {
+        GameController gc = GameController.getInstance();
+        gc.setOverNumber(0);
+        gc.startGame();
+    }
+
+    private void showVictory() {
+        GameController.getInstance().setGameStatus(GameState.VICTORY);
+        onGamePause();
+        GameUI.gameFrame.getGameInformationPanel().onGamePause();
+        GameUI.gameFrame.getGameInformationPanel().getRadarPanel().onGamePause();
+
+        int score = GameController.getInstance().getScore();
+        int res = JOptionPane.showConfirmDialog(GameUI.gameFrame, "恭喜通关！最终得分：" + score, "胜利", JOptionPane.YES_NO_OPTION);
+        if (res == 0) {
+            GameController.getInstance().restartToInitial();//重新开始游戏
+        } else {
+            System.exit(0);//直接退出程序
+        }
+    }
+
+    public void toggleAbout() {
+        if (aboutPanel.isVisible()) {
+            aboutPanel.setVisible(false);
+            requestFocusInWindow();
+            if (preAboutState == GameState.RUNNING) {
+                GameController.getInstance().continueGame();
+            }
+        } else {
+            helpPanel.setVisible(false);//避免重叠
+            preAboutState = GameController.getInstance().getGameStatus();
+            if (preAboutState == GameState.RUNNING) {
+                GameController.getInstance().pauseGame();
+            }
+            aboutPanel.setVisible(true);
+        }
+        repaint();
+    }
+
+    public void toggleHelp() {
+        if (helpPanel.isVisible()) {
+            // 关闭帮助
+            helpPanel.setVisible(false);
+            requestFocusInWindow();
+            // 如果打开前游戏正在运行，就恢复
+            if (preHelpState == GameState.RUNNING) {
+                GameController.getInstance().continueGame();
+            }
+        } else {
+            // 打开帮助
+            aboutPanel.setVisible(false);
+            preHelpState = GameController.getInstance().getGameStatus();
+            if (preHelpState == GameState.RUNNING) {
+                GameController.getInstance().pauseGame();
+            }
+            helpPanel.setVisible(true);
+        }
+        repaint();
+    }
+
+    public static void reloadMap() {
+        if (GameController.getInstance().getSkin() == Skin.COLOR) {
+            mapImage = new ImageIcon(GameCenterPanel.class.getResource(C_MAP[r.nextInt(9)+1])).getImage();
+        } else {
+            mapImage = new ImageIcon(GameCenterPanel.class.getResource(G_MAP[0])).getImage();
+        }
     }
 
     public void onGameStart() {
-        //地图
+        bossSpawned = false;
+        heroDying = false;
+        heroDeathExplosion = null;
+        lowPlaneNumber = GameController.getInstance().getLowEnemyMaxNumber();
+        hightPlaneNumber = GameController.getInstance().getHighEnemyMaxNumber();
+        bossNumber = GameController.bossMaxNumber;
         mapY = 0;//从头开始滚
         //雷达
         scrollTimer.start();
@@ -378,7 +564,15 @@ public class GameCenterPanel extends JPanel {
         lowAndHightEnemyTimer.start();
         //boss移动
         bossTimer.start();
-        lowEnemyPlaneList.clear();//清掉上一局的残留
+        //清掉上一局的残留
+        lowEnemyPlaneList.clear();//初级敌机
+        highEnemyPlaneList.clear(); //高级敌机
+        propList.clear();//道具
+        explosionList.clear();//爆炸特效
+        heroBulletList.clear();//英雄机子弹
+        enemyBulletList.clear();//敌机子弹
+        bossBulletList.clear();//boss子弹
+        bossPlane = null;
         //道具移动
         propMoveTimer.start();
         //碰撞检测
@@ -462,8 +656,6 @@ public class GameCenterPanel extends JPanel {
         enemyBulletMoveTimer.stop();
         bossFireTimer.stop();
         bossBulletMoveTimer.stop();
-
-
     }
 
     /**
@@ -479,12 +671,12 @@ public class GameCenterPanel extends JPanel {
         if (GameController.getInstance().getGameStatus() == GameState.WAITING) {
             //绘制待机图片
             if(GameController.getInstance().getSkin() == Skin.COLOR){
-                g.drawImage(colorBackgroundImage, 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(backgroundImage[0], 0, 0, getWidth(), getHeight(), null);
             }else{
-                g.drawImage(grayBackgroundImage, 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(backgroundImage[1], 0, 0, getWidth(), getHeight(), null);
             }
 
-        } else {
+        }else if(GameController.getInstance().getGameStatus() == GameState.RUNNING){
             //画滚动地图,画两份实现无缝循环
             int imgH = mapImage.getHeight(null);
             //第一份往下偏移mapY
@@ -492,7 +684,7 @@ public class GameCenterPanel extends JPanel {
             //第二份紧贴第一份上方，填补空隙
             g.drawImage(mapImage, 0, mapY - imgH, getWidth(), imgH, null);
             //英雄机
-            if(heroPlane !=null){
+            if(heroPlane !=null && !heroDying){
                 if (!heroPlane.isInvincible() || heroPlane.isVisible()) {
                     heroPlane.draw(g);
                 }
@@ -525,6 +717,28 @@ public class GameCenterPanel extends JPanel {
             //爆炸
             if(explosionList != null){
                 for(Explosion ex:explosionList) ex.draw(g);
+            }
+        }else if(GameController.getInstance().getGameStatus() == GameState.PAUSE){
+            if(GameController.getInstance().getSkin() == Skin.COLOR){
+                g.drawImage(pauseImage[0], 0, 0, getWidth(), getHeight(), null);
+            }else{
+                g.drawImage(pauseImage[1], 0, 0, getWidth(), getHeight(), null);
+            }
+        }else if(GameController.getInstance().getGameStatus() == GameState.GAME_OVER) {
+            if (GameController.getInstance().getSkin() == Skin.COLOR) {
+                g.drawImage(gameOverImage[0], 0, 0, getWidth(), getHeight(), null);
+            } else {
+                g.drawImage(gameOverImage[1], 0, 0, getWidth(), getHeight(), null);
+            }
+        }else if(GameController.getInstance().getGameStatus() == GameState.COUNTDOWN) {
+            if (GameController.getInstance().getGameStatus() == GameState.COUNTDOWN) {
+                g.setColor(new Color(0, 0, 0, 160));
+                g.fillRect(0, 0, getWidth(), getHeight());
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("微软雅黑", Font.BOLD, 34));
+                String text = countdownSeconds + " 秒后进入第 " + GameController.getInstance().getLevel() + " 关";
+                int x = (getWidth() - g.getFontMetrics().stringWidth(text)) / 2;
+                g.drawString(text, x, getHeight() / 2);
             }
         }
     }
@@ -583,14 +797,6 @@ public class GameCenterPanel extends JPanel {
 
     public void setEnemyBulletList(List<EnemyBullet> enemyBulletList) {
         this.enemyBulletList = enemyBulletList;
-    }
-
-    public Image getBackgroundImage() {
-        return colorBackgroundImage;
-    }
-
-    public void setBackgroundImage(Image backgroundImage) {
-        this.colorBackgroundImage = backgroundImage;
     }
 
     public int getBossNumber() {

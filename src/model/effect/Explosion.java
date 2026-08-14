@@ -2,6 +2,7 @@ package model.effect;
 
 import controller.GameController;
 import controller.gameEnum.Skin;
+import controller.gameEnum.Type;
 import model.GameObject;
 
 import javax.swing.*;
@@ -10,13 +11,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class Explosion extends GameObject {
-    public enum Type{
-        L_HERO,
-        H_HERO,
-        LOW,
-        HIGH,
-        BOSS
-    }
 
     //彩色主题下的爆炸图片
     private static final Map<Type,String[]> COLOR_PATH = new EnumMap<>(Type.class){
@@ -87,8 +81,8 @@ public class Explosion extends GameObject {
     private int currentIndex = 0;
     private boolean finished = false;
 
-    private static int WIDTH;
-    private static int HEIGHT;
+    private int WIDTH;
+    private int HEIGHT;
 
     private Type type;
 
@@ -118,7 +112,7 @@ public class Explosion extends GameObject {
             String[] path = (s == Skin.GRAY) ? GRAY_PATH.get(t) : COLOR_PATH.get(t);
             Image[] images = new Image[path.length];
             for(int i=0;i< path.length;i++){
-                images[i] = new ImageIcon(Explosion.class.getResource(path[i])).getImage().getScaledInstance(WIDTH,HEIGHT,Image.SCALE_SMOOTH);
+                images[i] = new ImageIcon(Explosion.class.getResource(path[i])).getImage();
             }
             FRAMES.put(t, images);
         }
@@ -137,7 +131,7 @@ public class Explosion extends GameObject {
     @Override
     public void draw(Graphics g) {
         if (!finished) {
-            g.drawImage(effectImages[currentIndex], getX(), getY(), null);
+            g.drawImage(effectImages[currentIndex], getX(), getY(),WIDTH,HEIGHT, null);
         }
     }
 

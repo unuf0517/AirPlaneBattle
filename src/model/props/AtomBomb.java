@@ -11,8 +11,6 @@ public class AtomBomb extends Prop{
     private Image atomBombImage=new ImageIcon(getClass().getResource("/images/game/color/props/atomBomb1.png")).getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);;
     //核弹宽度
     public static final int HEIGHT = 50;
-    //核弹数量
-    private int bombNumber;
 
     public AtomBomb(int x,int y){
         super(x,y);
@@ -32,12 +30,4 @@ public class AtomBomb extends Prop{
         return HEIGHT;
     }
 
-
-    public int getBombNumber() {
-        return bombNumber;
-    }
-
-    public void addBombNumber(int bombNumber) {
-        this.bombNumber = bombNumber+1;
-    }
 }

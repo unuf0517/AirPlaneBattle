@@ -78,10 +78,11 @@ public class LoginPanel extends JPanel {
         loginBtn.setBounds(85, 330, 150, 40);
         loginBtn.setFont(FONT);
         add(loginBtn);
-
+        add(enrollBtn);
         //注册按钮
         enrollBtn.setBounds(190, 384, 80, 15);
         enrollBtn.setFont(new Font("微软雅黑", Font.BOLD,11));
+
         //不画背景
         enrollBtn.setContentAreaFilled(false);
         //不画边框
@@ -92,7 +93,6 @@ public class LoginPanel extends JPanel {
         enrollBtn.setForeground(new Color(24, 144, 255));
         //透明
         enrollBtn.setOpaque(false);
-        add(enrollBtn);
 
         //实例化动作监听
         LoginActionLis loginActionLis = new LoginActionLis();

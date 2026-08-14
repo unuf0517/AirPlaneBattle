@@ -2,12 +2,17 @@ package controller;
 
 import controller.gameEnum.GameState;
 import controller.gameEnum.Skin;
+import model.bullet.BossBullet;
+import model.bullet.EnemyBullet;
+import model.bullet.HeroBullet;
 import model.effect.Explosion;
 import model.plane.BossPlane;
 import model.plane.HeroPlane;
 import model.plane.HighEnemyPlane;
 import model.plane.LowEnemyPlane;
 import view.GameUI;
+import view.game.GameCenterPanel;
+import view.game.GameInformationPanel;
 
 public class GameController {
     //游戏状态
@@ -27,21 +32,25 @@ public class GameController {
     //核弹数量
     private int bombNumber;
     //当前关卡
-    public static int currentLevel = 2;
+    private int level = 1;
+    //总关数
+    public static final int MAX_LEVEL = 3;
     //得分
     private int score;
     //敌机越过防线数
     private int overNumber;
+    //自定义速度
+    private int customSpeedFactor = 5;
 
     private final static GameController gameController = new GameController();
 
     public GameController(){
-        setLevel(currentLevel);
+        setLevel(level);
     }
 
 
     public void setLevel(int level) {
-        currentLevel = level;
+        this.level = level;
         switch (level) {
             case 1:
                 lowEnemyMaxHp = 2;
@@ -62,7 +71,7 @@ public class GameController {
             case 3:
                 lowEnemyMaxHp = 4;
                 highEnemyMaxHp = 6;
-                bossMaxHp = 50;
+                bossMaxHp = 40;
 
                 lowEnemyMaxNumber=10;
                 highEnemyMaxNumber=20;
@@ -75,15 +84,16 @@ public class GameController {
 
     public static void applySkin(Skin s){
         GameController.getInstance().setSkin(s);
-        HeroPlane.reloadImages();
-        LowEnemyPlane.reloadImages();
-        HighEnemyPlane.reloadImages();
-        BossPlane.reloadImages();
-//        HeroBullet.reloadImages();
-//        EnemyBullet.reloadImages();
-//        BossBullet.reloadImages();
-        Explosion.reloadImages();
-//        gameCenterPanel.repaint();
+        HeroPlane.reloadImages();//英雄机
+        LowEnemyPlane.reloadImages();//敌机敌机
+        HighEnemyPlane.reloadImages();//高级敌机
+        BossPlane.reloadImages();//boss
+        HeroBullet.reloadImages();//英雄机子弹
+        EnemyBullet.reloadImages();//敌机子弹
+        BossBullet.reloadImages();//Boss子弹
+        Explosion.reloadImages();//爆炸效果
+        GameCenterPanel.reloadMap();//游戏中心
+        GameInformationPanel.reloadImage();//信息中心图片
     }
 
     //恢复到未登录状态
@@ -92,7 +102,6 @@ public class GameController {
         if (GameUI.gameFrame != null) {
             GameUI.gameFrame.getGameCenterPanel().onGamePause();
             GameUI.gameFrame.getGameInformationPanel().getRadarPanel().onGamePause();
-            // 飞机、敌机的 Timer 同理
         }
         //状态归零
         gameState = GameState.WAITING;
@@ -105,6 +114,7 @@ public class GameController {
      * 开始游戏
      */
     public void startGame() {
+        overNumber = 0;//开始游戏重置个数
         gameState = GameState.RUNNING;
         GameUI.gameFrame.getGameCenterPanel().onGameStart();//地图、飞机
         GameUI.gameFrame.getGameInformationPanel().onGameStart();
@@ -145,12 +155,24 @@ public class GameController {
     /**
      * 结束游戏
      */
-//    public void endGame() {
-//        gameState = GameState.END;
-//        GameUI.gameFrame.getGameCenterPanel().onGameEnd();
-//        GameUI.gameFrame.getGameInformationPanel().getRadarPanel().onGamePause();
-//        GameUI.gameFrame.refreshMenuState();   // END → 只有 restart 亮
-//    }
+    public void endGame() {
+        gameState = GameState.GAME_OVER;
+        GameUI.gameFrame.getGameCenterPanel().onGameEnd();
+        GameUI.gameFrame.getGameInformationPanel().onGamePause();
+        GameUI.gameFrame.getGameInformationPanel().getRadarPanel().onGamePause();
+        GameUI.gameFrame.refreshMenuState();
+        GameUI.gameFrame.getGameInformationPanel().onGamePause();
+    }
+
+    //通关后重新开始
+    public void restartToInitial() {
+        setLevel(1);
+        overNumber = 0;
+        customSpeedFactor = 5;
+        setSkin(Skin.COLOR);
+        applySkin(Skin.COLOR);
+        restartGame();
+    }
 
     /**
      *
@@ -200,11 +222,31 @@ public class GameController {
         this.overNumber++;
     }
 
+    public void setOverNumber(int n){
+        this.overNumber = n;//过关重置
+    }
+
     public Skin getSkin() {
         return skin;
     }
 
     public void setSkin(Skin skin) {
         this.skin = skin;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public static double getCustomSpeed() {
+        return 1.0 + (getInstance().customSpeedFactor - 5) * 0.1;
+    }
+
+    public int getCustomSpeedFactor(){
+        return  customSpeedFactor;
+    }
+
+    public void setCustomSpeed(int customSpeed) {
+        this.customSpeedFactor = customSpeed;
     }
 }

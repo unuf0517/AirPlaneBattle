@@ -46,12 +46,12 @@ public class HighEnemyPlane extends Plane{
         if (GameController.getInstance().getSkin() == Skin.COLOR) {
             images = new Image[C_PATH.length];
             for(int i=0;i<C_PATH.length;i++){
-                images[i]=new ImageIcon(LowEnemyPlane.class.getResource(C_PATH[i])).getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
+                images[i]=new ImageIcon(HighEnemyPlane.class.getResource(C_PATH[i])).getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
             }
         }else{
             images = new Image[G_PATH.length];
             for(int i=0;i<G_PATH.length;i++){
-                images[i]=new ImageIcon(LowEnemyPlane.class.getResource(G_PATH[i])).getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
+                images[i]=new ImageIcon(HighEnemyPlane.class.getResource(G_PATH[i])).getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
             }
         }
     }

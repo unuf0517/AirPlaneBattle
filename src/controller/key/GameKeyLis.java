@@ -1,6 +1,8 @@
 package controller.key;
 
 import controller.GameController;
+import controller.gameEnum.GameState;
+import controller.gameEnum.Type;
 import model.bullet.EnemyBullet;
 import model.effect.Explosion;
 import model.plane.HighEnemyPlane;
@@ -12,29 +14,51 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-public class BombKeyLis extends KeyAdapter {
+public class GameKeyLis extends KeyAdapter {
     private GameCenterPanel gameCenterPanel;
 
     private boolean bombKeyPressed = false;
 
-    public BombKeyLis(GameCenterPanel gameCenterPanel) {
+    public GameKeyLis(GameCenterPanel gameCenterPanel) {
         this.gameCenterPanel = gameCenterPanel;
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e){
-        if(e.getKeyCode() != KeyEvent.VK_H) return;
-        //防止核弹连发
-        if(bombKeyPressed) return;
-        bombKeyPressed = true;
-
-        launchBomb();
     }
 
     @Override
     public void keyReleased(KeyEvent e){
         if(e.getKeyCode() != KeyEvent.VK_H) return;
         bombKeyPressed = false;
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int code = e.getKeyCode();
+        GameState state = GameController.getInstance().getGameStatus();
+
+        switch (code) {
+            case KeyEvent.VK_H:
+                // 防止核弹连发
+                if (bombKeyPressed) return;
+                bombKeyPressed = true;
+                if (state == GameState.RUNNING) {
+                    launchBomb();
+                }
+                break;
+            case KeyEvent.VK_U:
+                if (state == GameState.WAITING) {
+                    GameController.getInstance().startGame();
+                }
+                break;
+            case KeyEvent.VK_I:
+                if (state == GameState.RUNNING) {
+                    GameController.getInstance().pauseGame();
+                }
+                break;
+            case KeyEvent.VK_O:
+                if (state == GameState.PAUSE) {
+                    GameController.getInstance().continueGame();
+                }
+                break;
+        }
     }
 
     public void launchBomb(){
@@ -52,10 +76,10 @@ public class BombKeyLis extends KeyAdapter {
         gameCenterPanel.decreaseHightPlane(highEnemyPlaneList.size());
         //爆炸特效
         for(LowEnemyPlane lep : lowEnemyPlaneList){
-            gameCenterPanel.getExplosionList().add(new Explosion(lep.getX(), lep.getY(), LowEnemyPlane.WIDTH, LowEnemyPlane.HEIGHT, Explosion.Type.LOW));
+            gameCenterPanel.getExplosionList().add(new Explosion(lep.getX(), lep.getY(), LowEnemyPlane.WIDTH, LowEnemyPlane.HEIGHT,Type.LOW));
         }
         for(HighEnemyPlane hep : highEnemyPlaneList){
-            gameCenterPanel.getExplosionList().add(new Explosion(hep.getX(), hep.getY(), HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT, Explosion.Type.HIGH));
+            gameCenterPanel.getExplosionList().add(new Explosion(hep.getX(), hep.getY(), HighEnemyPlane.WIDTH, HighEnemyPlane.HEIGHT, Type.HIGH));
         }
         //清楚敌机列表
         lowEnemyPlaneList.clear();
