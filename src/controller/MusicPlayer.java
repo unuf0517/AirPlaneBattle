@@ -28,32 +28,5 @@ public class MusicPlayer {
             e.printStackTrace();
         }
     }
-
-
-    //循环播放背景音乐
-    public static void playBGM(String path) {
-        stopBGM();  // 先停掉旧的
-        try {
-            InputStream is = MusicPlayer.class.getResourceAsStream(path);
-            if (is == null) return;
-
-            AudioInputStream ais = AudioSystem.getAudioInputStream(new BufferedInputStream(is));
-            bgmClip = AudioSystem.getClip();
-            bgmClip.open(ais);
-            bgmClip.loop(Clip.LOOP_CONTINUOUSLY);
-            bgmClip.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    //停止背景音乐
-    public static void stopBGM() {
-        if (bgmClip != null) {
-            bgmClip.stop();
-            bgmClip.close();
-            bgmClip = null;
-        }
-    }
 }
 
