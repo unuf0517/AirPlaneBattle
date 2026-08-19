@@ -119,7 +119,7 @@ public class GameCreateTimer {
             }
         });
 
-        bossFireTimer = new Timer(1000, e -> {
+        bossFireTimer = new Timer(2000, e -> {
             BossPlane bossPlane = gameCenterPanel.getBossPlane();
             if (bossPlane == null) return;
 

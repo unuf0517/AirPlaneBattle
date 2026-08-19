@@ -63,7 +63,7 @@ public class GameMoveTimer {
             gameCenterPanel.repaint();
         });
 
-        bossTimer = new Timer(30, e -> {
+        bossTimer = new Timer(50, e -> {
             BossPlane bossPlane = gameCenterPanel.getBossPlane();
             if (bossPlane == null) return;
 

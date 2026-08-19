@@ -11,8 +11,8 @@ public class BossPlane extends Plane{
     //水平速度
     private int speedX=2;
 
-    public static final int WIDTH = 120;
-    public static final int HEIGHT = 160;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 135;
 
     //图片
     private static Image[] images;

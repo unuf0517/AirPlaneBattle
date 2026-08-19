@@ -114,7 +114,7 @@ public class CollisionDetector {
         //创建临时列表保存需要删除的子弹
         List<EnemyBullet> toRemoveEnemy = new ArrayList<>();
         List<HeroBullet> toRemoveHero = new ArrayList<>();
-        List<BossBullet> toRemovBoss = new ArrayList<>();
+//        List<BossBullet> toRemovBoss = new ArrayList<>();
 
         for(HeroBullet hb : heroBulletList){
             Rectangle hbRect=hb.getRectangle(HeroBullet.WIDTH,HeroBullet.HEIGHT);
@@ -128,18 +128,18 @@ public class CollisionDetector {
                     break;//一颗子弹只会碰撞一次
                 }
             }
-            for(BossBullet bb : bossBulletList){
-                Rectangle bbRect = bb.getRectangle(BossBullet.WIDTH,BossBullet.HEIGHT);
-                if(toRemovBoss.contains(bb)) continue;
-                if(hbRect.intersects(bbRect)){
-                    toRemoveHero.add(hb);
-                    toRemovBoss.add(bb);
-                }
-            }
+//            for(BossBullet bb : bossBulletList){
+//                Rectangle bbRect = bb.getRectangle(BossBullet.WIDTH,BossBullet.HEIGHT);
+//                if(toRemovBoss.contains(bb)) continue;
+//                if(hbRect.intersects(bbRect)){
+//                    toRemoveHero.add(hb);
+//                    toRemovBoss.add(bb);
+//                }
+//            }
         }
         heroBulletList.removeAll(toRemoveHero);
         enemyBulletList.removeAll(toRemoveEnemy);
-        bossBulletList.removeAll(toRemovBoss);
+//        bossBulletList.removeAll(toRemovBoss);
     }
 
     //敌机与子弹碰撞

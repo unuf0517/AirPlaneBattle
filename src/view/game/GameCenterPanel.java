@@ -45,6 +45,10 @@ public class GameCenterPanel extends JPanel {
             new ImageIcon(GameCenterPanel.class.getResource("/images/game/color/gameover.png")).getImage(),
             new ImageIcon(GameCenterPanel.class.getResource("/images/game/gray/gameover.png")).getImage()
     };
+    private static Image[] victoryImage = {
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/color/victory.png")).getImage(),
+            new ImageIcon(GameCenterPanel.class.getResource("/images/game/gray/victory.png")).getImage()
+    };
     //游戏地图
     private static Image mapImage;
     //彩色游戏地图
@@ -235,7 +239,7 @@ public class GameCenterPanel extends JPanel {
         onGamePause();
         GameUI.gameFrame.getGameInformationPanel().onGamePause();
         GameUI.gameFrame.getGameInformationPanel().getRadarPanel().onGamePause();
-
+        repaint();
         int score = GameController.getInstance().getScore();
         int res = JOptionPane.showConfirmDialog(GameUI.gameFrame, "恭喜通关！最终得分：" + score, "胜利", JOptionPane.YES_NO_OPTION);
         if (res == 0) {
@@ -453,6 +457,13 @@ public class GameCenterPanel extends JPanel {
                 int x = (getWidth() - g.getFontMetrics().stringWidth(text)) / 2;
                 g.drawString(text, x, getHeight() / 2);
             }
+        } else if (GameController.getInstance().getGameStatus() == GameState.VICTORY) {
+            if (GameController.getInstance().getSkin() == Skin.COLOR) {
+                g.drawImage(victoryImage[0], 0, 0, getWidth(), getHeight(), null);
+            } else {
+                g.drawImage(victoryImage[1], 0, 0, getWidth(), getHeight(), null);
+            }
+
         }
     }
 

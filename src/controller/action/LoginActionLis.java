@@ -28,6 +28,8 @@ public class LoginActionLis implements ActionListener {
                         GameUI.gameFrame = new GameFrame();
                     }
                     GameUI.startFrame.setVisible(true);
+                }else{
+                    JOptionPane.showMessageDialog(null,"账号或密码错误，请重新输入","温馨提示",JOptionPane.PLAIN_MESSAGE);
                 }
                 break;
             case "enrollButton":

@@ -11,8 +11,8 @@ public class BossBullet extends GameObject {
     //子弹图片
     private static Image[] bulletImage;
     //子弹的宽高
-    public static final int WIDTH = 50;
-    public static final int HEIGHT = 50;
+    public static final int WIDTH = 35;
+    public static final int HEIGHT = 35;
 
     private static String[] C_PATH = {
             "/images/game/color/bullet/bossBullet/1.png",
