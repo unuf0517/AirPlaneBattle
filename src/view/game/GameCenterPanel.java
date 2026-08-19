@@ -21,7 +21,6 @@ import model.plane.HighEnemyPlane;
 import model.plane.LowEnemyPlane;
 import model.props.Prop;
 import view.GameUI;
-import view.game.custom.AboutPanel;
 
 import javax.swing.*;
 import java.awt.*;

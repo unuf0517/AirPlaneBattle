@@ -1,4 +1,4 @@
-package view.game.custom;
+package view.game;
 
 import controller.GameController;
 import controller.gameEnum.Skin;
